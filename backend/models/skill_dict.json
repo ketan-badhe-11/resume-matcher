@@ -1,0 +1,8 @@
+[
+  "python", "java", "aws", "azure", "gcp", "react", "angular", "node.js", "express", "django",
+  "flask", "sql", "mysql", "postgresql", "mongodb", "redis", "docker", "kubernetes", "terraform",
+  "git", "html", "css", "javascript", "typescript", "jenkins", "linux", "pandas", "numpy", "scikit-learn",
+  "spark", "hadoop", "airflow", "elasticsearch", "graphql", "rest", "fastapi", "opencv", "nlp", "pytorch",
+  "tensorflow", "keras", "xgboost", "lightgbm", "catboost", "supabase", "weaviate", "qdrant", "langchain",
+  "rabbitmq", "kafka", "webpack", "vite"
+]

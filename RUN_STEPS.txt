@@ -1,0 +1,65 @@
+STEP-BY-STEP LOCAL RUN GUIDE (Windows PowerShell)
+
+1. Clone or unzip project so you have folder: resume-matcher/
+2. Place local embedding model folder under: resume-matcher/backend/local_models/embeddings/
+   (This folder should contain SentenceTransformer files: config.json, tokenizer/, model.safetensors or pytorch_model.bin, etc.)
+ 2a. (Optional automated download) Run the helper script to fetch the default embedding model if the folder is empty:
+    python backend/scripts/download_models.py
+    (Script will download `sentence-transformers/all-MiniLM-L6-v2` and create OCR subfolders.)
+3. (Optional) Place PaddleOCR custom model files under: resume-matcher/backend/local_models/ocr/
+4. Ensure MongoDB is running (default port 27017). If using Docker:
+   docker run -d --name mongo -p 27017:27017 mongo:6
+5. Ensure Qdrant is running (default port 6333). If using Docker:
+   docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant
+6. Open PowerShell and navigate:
+   cd resume-matcher/backend
+7. Create virtual environment (optional but recommended):
+   python -m venv .venv
+   .venv\Scripts\Activate.ps1
+8. Install dependencies:
+   pip install -r requirements.txt
+9. (Optional) Install spaCy English model for NER improvements:
+   python -m spacy download en_core_web_sm
+10. Set environment variables if needed (examples):
+   $env:MONGO_URI="mongodb://localhost:27017"
+   $env:QDRANT_HOST="localhost"
+   $env:QDRANT_PORT="6333"
+11. Start API server:
+   uvicorn main:app --reload
+12. Open docs UI in browser: http://127.0.0.1:8000/docs
+13. Test resume upload:
+   Use /resumes/upload-resume with a file (PDF/DOCX/JPG/PNG)
+14. Check stored profile:
+   Call /resumes/profile/{employee_id} from previous response
+15. Process a Job Description:
+   POST /jd/process-jd with JSON: {"text": "We seek a Python developer with 3 years experience in AWS and React."}
+16. Run matching:
+   POST /match/run with JSON: {"jd_text": "We seek a Python developer with 3 years experience in AWS and React.", "top_k":5}
+17. View results: Ranked candidates with composite scores.
+18. Export (placeholder): /resumes/export/{employee_id} returns JSON; extend for DOCX/PDF later.
+19. To implement full export:
+    - Generate DOCX via python-docx (or docxtpl using jd_template.docx) into a temp folder.
+    - Convert to PDF using docx2pdf or LibreOffice CLI.
+    - Create ZIP with both files using zipfile and return as StreamingResponse.
+20. Stop server: Ctrl+C.
+21. Deactivate virtual environment: deactivate
+
+MODEL PLACEMENT SUMMARY:
+- Sentence embeddings: resume-matcher/backend/local_models/embeddings/
+- OCR models (optional): resume-matcher/backend/local_models/ocr/
+- LLM resources (optional): resume-matcher/backend/local_models/llm/
+- Skills dictionary: resume-matcher/backend/models/skill_dict.json
+- Sample resumes: resume-matcher/datasets/sample_resumes/
+- Sample JDs: resume-matcher/datasets/sample_jd/
+
+RUN COMMANDS QUICK REFERENCE:
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+TROUBLESHOOTING QUICK:
+- ImportError sentence-transformers: pip install --upgrade sentence-transformers
+- Qdrant connection error: verify container running; try curl http://localhost:6333/collections
+- Mongo connection error: ensure service started or container up.
+- OCR poor results: increase PDF DPI conversion in extractor or pre-process images.
+
+Enjoy! Share this file with the ZIP for quick onboarding.
